@@ -1,0 +1,208 @@
+= Mise en oeuvre de GNS3
+:author: Thierry Vaira
+:email: tvaira@free.fr
+:revnumber: v0.1
+:revdate: 15/01/2022
+:revremark:
+:sectnums:
+:toc: left
+:toclevels: 4
+:toc-title: Sommaire
+:description: Mise en oeuvre de GNS3
+:keywords: gns3 réseau
+:imagesdir: ./images/
+:source-highlighter: highlightjs
+:highlightjs-theme: rainbow
+:stem:
+
+////
+:highlightjs-theme: xcode
+:highlightjs-theme: androidstudio
+:highlightjs-theme: googlecode
+:highlightjs-theme: github
+:highlightjs-theme: foundation
+:highlightjs-theme: idea
+:highlightjs-theme: rainbow
+:highlightjs-theme: vs
+:highlightjs-theme: sunburst
+:highlightjs-theme: tomorrow
+:highlightjs-theme: railscasts
+:highlightjs-theme: zenburn
+////
+
+ifdef::backend-html5[]
+++++
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+++++
+:html:
+endif::[]
+
+:icons: font
+
+:home: https://http://tvaira.free.fr/bts-sn/reseaux/cours/
+
+ifdef::backend-pdf[]
+{author} - <{email}> - version {revnumber} - {revdate} - {home}[tvaira.free.fr]
+endif::[]
+
+Objectif : Mettre en oeuvre GNS3
+
+== GNS3
+
+https://www.gns3.com/[GNS3] (_Graphical Network Simulator_) est un logiciel libre permettant l'émulation ou la simulation de réseaux informatiques. 
+
+//.Le logo GNS3
+image:gns3-logo.png[title="Le logo GNS3"]
+
+- Site officiel : https://www.gns3.com/
+- Documentations : https://docs.gns3.com/docs/
+
+=== Installation
+
+Suivre la procédure donnée dans ce document : https://btssn-lasalle84.github.io/guide-reseaux/guides-pdf/installation-gns3.pdf[installation-gns3.pdf]
+
+Voir aussi : https://docs.gns3.com/docs/getting-started/installation/linux/
+
+=== GNS3 GUI
+
+==== VPCS
+
+VPCS (_Virtual PC Simulator_) est le simulateur fourni par défaut pour les noeuds. Ce programme, écrit par Paul Meng, permet de simuler un PC léger prenant en charge DHCP et ping. Il ne consomme que 2 Mo de RAM par instance et ne nécessite pas d'image supplémentaire.
+
+Documentation : https://docs.gns3.com/docs/emulators/vpcs/
+
+==== Conteneurs Docker
+
+Il est possible d'utiliser des conteneurs Docker pour les noeuds dans GNS3 (https://docs.gns3.com/docs/emulators/docker-support-in-gns3).
+
+[NOTE]
+====
+Des conteneurs Docker pour GNS3 sont disponibles ici :
+
+- https://hub.docker.com/u/gns3/
+- https://hub.docker.com/r/tvaira/ubuntu-2004-gns3
+
+====
+
+Pour les machines hôtes, on utilisera `tvaira/ubuntu-2004-gns3:latest`.
+
+==== Appareils (_appliance_)
+
+Voir aussi : https://github.com/GNS3/gns3-registry/tree/master/appliances
+
+Certains appareils nécessites `vncviewer` pour s'y connecter à partir d'une console :
+
+----
+$ wget https://www.realvnc.com/download/file/viewer.files/VNC-Viewer-6.21.1109-Linux-x64.deb
+$ sudo dpkg -i VNC-Viewer-6.21.1109-Linux-x64.deb
+----
+
+===== webterm
+
+
+
+===== Open vSwitch
+
+**Open vSwitch** est un commutateur virtuel multicouche.
+
+Documentation : http://openvswitch.org/support/
+
+Télécharger l'_appliance_ sur le _marketplace_ de GNS3 : https://gns3.com/marketplace/appliances/open-vswitch
+
+
+===== Routeur Open source
+
+Sur le Marketplace de GNS3, chercher **pfSense**.
+
+Il s’agit d’un projet de routeur open source basé sur FreeBSD (une version de linux) prenant en charge le routage, le DHCP et le NAT. De plus, il possède un _firewall_.
+
+Liens :
+
+- https://www.pfsense.org/about-pfsense/features.html
+- https://doc.pfsense.org/index.php/Main_Page
+
+Télécharger l'_appliance_ : https://raw.githubusercontent.com/GNS3/gns3-registry/master/appliances/ubuntu-gui.gns3a
+
+==== Topologie d'une maquette
+
+
+=== Web-Ui
+
+L'accès à GNS3 peut aussi se faire par une interface Web : `http://<adresse-ip>/`
+
+[TIP]
+====
+Utiliser l'adresse IP de l'interface réseau avec un Accès par pont.
+====
+
+image:gns3-web-ui.png[]
+
+Créer et ouvrir un projet pour accéder à l'interface de GNS3
+
+image:gns3-add-project.png[]
+
+Exemple de topologie réseau :
+
+image:gns3-project-topology.png[]
+
+Dans l'interface Web-Ui, ouvrir un projet :
+
+image:gns3-open-project.png[]
+
+Puis ajouter des noeuds :
+
+image:gns3-add-a-node.png[]
+
+Et des liens :
+
+image:gns3-add-a-link.png[]
+
+Pour obtenir le réseau suivant par exemple :
+
+image:gns3-project-topology.png[]
+
+Sélectionner un noeud et faire un clic droit :
+
+image:gns3-clic-droit.png[]
+
+- `Start` : démarrer le noeud puis,
+- `Web console in new tab` : ouvrir une console dans un onglet
+
+image:gns3-console-web.png[]
+
+- Pour les images Docker :
+
+Dans l'interface Web-Ui, aller dans Préférences :
+
+image:gns3-goto-preferences.png[]
+
+Sélectionner Docker :
+
+image:gns3-preferences-docker.png[]
+
+Puis ajouter un nouveau _template_ :
+
+image:gns3-add-docker-container.png[]
+
+Paramètrer le nouveau conteneur :
+
+image:gns3-new-docker-container-1.png[]
+
+image:gns3-new-docker-container-2.png[]
+
+image:gns3-new-docker-container-3.png[]
+
+image:gns3-new-docker-container-5.png[]
+
+Finaliser en cliquant sur `Add template`.
+
+
+***
+
+ifdef::backend-html5[]
+Site : {home}[tvaira.free.fr]
+endif::[]
+
+ifdef::backend-pdf[]
+{author} - <{email}> - version {revnumber} - {revdate} - {home}[tvaira.free.fr]
+endif::[]
