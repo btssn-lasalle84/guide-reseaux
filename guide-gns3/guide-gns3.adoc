@@ -47,8 +47,6 @@ endif::[]
 
 Objectif : Mettre en oeuvre GNS3
 
-== GNS3
-
 https://www.gns3.com/[GNS3] (_Graphical Network Simulator_) est un logiciel libre permettant l'émulation ou la simulation de réseaux informatiques. 
 
 //.Le logo GNS3
@@ -57,13 +55,17 @@ image:gns3-logo.png[title="Le logo GNS3"]
 - Site officiel : https://www.gns3.com/
 - Documentations : https://docs.gns3.com/docs/
 
-=== Installation
+== Installation
 
 Suivre la procédure donnée dans ce document : https://btssn-lasalle84.github.io/guide-reseaux/guides-pdf/installation-gns3.pdf[installation-gns3.pdf]
 
 Voir aussi : https://docs.gns3.com/docs/getting-started/installation/linux/
 
-=== GNS3 GUI
+== GNS3 GUI
+
+image:gns3-gui.png[]
+
+=== Les noeuds
 
 ==== VPCS
 
@@ -80,26 +82,93 @@ Il est possible d'utiliser des conteneurs Docker pour les noeuds dans GNS3 (http
 Des conteneurs Docker pour GNS3 sont disponibles ici :
 
 - https://hub.docker.com/u/gns3/
-- https://hub.docker.com/r/tvaira/ubuntu-2004-gns3
+- https://hub.docker.com/r/tvaira/
 
 ====
 
-Pour les machines hôtes, on utilisera `tvaira/ubuntu-2004-gns3:latest`.
+Dans les maquettes des TPS, on utilisera :
 
-==== Appareils (_appliance_)
+- pour les machines hôtes, on utilisera `tvaira/ubuntu-2004-gns3:latest`
+- pour les machines clientes GUI, on utilisera `tvaira/clients-debian-gns3:latest`
+- pour les machines serveurs, on utilisera `tvaira/server-ubuntu2004-gns3:latest`
+- pour les routeurs, on utilisera `kathara/quagga:latest`
 
-Voir aussi : https://github.com/GNS3/gns3-registry/tree/master/appliances
+image:gns3-docker-quagga.png[]
 
-Certains appareils nécessites `vncviewer` pour s'y connecter à partir d'une console :
+[NOTE]
+====
+L'image `tvaira/clients-debian-gns3:latest` fournit Firefox et Filezilla et nécessite `vncviewer` pour s'y connecter à partir d'une console :
 
 ----
 $ wget https://www.realvnc.com/download/file/viewer.files/VNC-Viewer-6.21.1109-Linux-x64.deb
 $ sudo dpkg -i VNC-Viewer-6.21.1109-Linux-x64.deb
 ----
+====
+
+Pour ajouter une nouveau conteneur Docker, aller dans `Edit` → `Preferences` → `Docker containers` et cliquer sur `New` :
+
+image:gns3-docker-container-templates.png[]
+
+Puis :
+
+image:gns3-new-docker-container-template-1.png[]
+
+Choisir entre une image existante :
+
+image:gns3-new-docker-container-template-2a.png[]
+
+ou nouvelle image (https://hub.docker.com/) :
+
+image:gns3-new-docker-container-template-2b.png[]
+
+Terminer en donnant un nom :
+
+image:gns3-new-docker-container-template-3.png[]
+
+==== Machines virtuelles
+
+Il est possible d'utiliser des VM de VirtualBox ou VMWare.
+
+Pour ajouter une VM de VirtualBox, aller dans `Edit` → `Preferences` → `VirtualBox VMs` et cliquer sur `New` :
+
+image:gns3-vm-templates.png[]
+
+image:gns3-new-vm-template-1.png[]
+
+Choisir une VM dans la liste :
+
+image:gns3-choose-vm-template.png[]
+
+Terminer en cliquant sur `Finish` :
+
+image:gns3-new-vm-template-2.png[]
+
+==== Appareils (_appliance_)
+
+Les _appliances_ sont disponibles au téléchargement sur le _marketplace_ de GNS3 : https://gns3.com/marketplace/appliances/
+
+Voir aussi : https://github.com/GNS3/gns3-registry/tree/master/appliances
+
+[NOTE]
+====
+Certains appareils nécessitent `vncviewer` pour s'y connecter à partir d'une console :
+
+----
+$ wget https://www.realvnc.com/download/file/viewer.files/VNC-Viewer-6.21.1109-Linux-x64.deb
+$ sudo dpkg -i VNC-Viewer-6.21.1109-Linux-x64.deb
+----
+====
 
 ===== webterm
 
+**webterm** est une boîte à outils réseau basée sur Debian. Il contient le navigateur web Firefox plus les utilitaires suivants : `net-tools`, `iproute2`, `ping`, `traceroute`, `curl`, `host`, `iperf3`, `mtr`, `socat`, `ssh`, `tcpdump`, ...
 
+Télécharger l'_appliance_ sur le _marketplace_ de GNS3 : https://gns3.com/marketplace/featured/webterm
+
+[TIP]
+====
+L'image `tvaira/clients-debian-gns3:latest`, basée sur _webterm_, ajoute **Filezilla**.
+====
 
 ===== Open vSwitch
 
@@ -109,24 +178,127 @@ Documentation : http://openvswitch.org/support/
 
 Télécharger l'_appliance_ sur le _marketplace_ de GNS3 : https://gns3.com/marketplace/appliances/open-vswitch
 
+Open vSwitch supportant le protocole OpenFlow, il est possible d'ajouter une administration à distance des commutateurs via un contrôleur **Faucet**.
+
+[NOTE]
+====
+OpenFlow est un protocole réseau standard qui permet de réaliser une architecture Software-defined networking (SDN). Ce protocole est constitué d'instructions qui permet de programmer le plan de contrôle d’un équipement réseau.
+====
+
+Les contrôleurs comme Faucet utilisent OpenFlow pour contrôler la façon dont Open vSwitch (et d'autres commutateurs) traitent les trames et les paquets dans le réseau.
+
+On ajoute un conteneur Docker avec l'image `faucet/faucet:latest` :
+
+image:gns3-docker-faucet.png[]
+
+Puis on ajoute la commande à exécuter au démarrage :
+
+image:gns3-faucet-start-command.png[]
 
 ===== Routeur Open source
 
-Sur le Marketplace de GNS3, chercher **pfSense**.
-
-Il s’agit d’un projet de routeur open source basé sur FreeBSD (une version de linux) prenant en charge le routage, le DHCP et le NAT. De plus, il possède un _firewall_.
+**pfSense** est un projet de routeur open source basé sur FreeBSD (une version de linux) prenant en charge le routage, le DHCP et le NAT. De plus, il possède un _firewall_.
 
 Liens :
 
 - https://www.pfsense.org/about-pfsense/features.html
 - https://doc.pfsense.org/index.php/Main_Page
 
-Télécharger l'_appliance_ : https://raw.githubusercontent.com/GNS3/gns3-registry/master/appliances/ubuntu-gui.gns3a
+Télécharger l'_appliance_ : https://gns3.com/marketplace/featured/pfsense
 
-==== Topologie d'une maquette
+Puis l'installer dans GNS3 :
 
+image:gns3-pfsense-appliance.png[]
 
-=== Web-Ui
+=== Configuration d'un noeud
+
+==== Réseau
+
+Il est habituel d'éditer la configuration réseau d'un noeud :
+
+image:gns3-edit-config.png[]
+
+Puis par exemple pour l'interface `eth0` :
+
+image:gns3-config-interfaces.png[]
+
+[NOTE]
+====
+Le mot clé `up` permet d'ajouter des commandes au démarrage de l'interface, par exemple : `up route add -net 172.16.32.0 netmask 255.255.255.0 gw 192.168.0.254`
+====
+
+==== Conteneur Docker
+
+Pour les conteneurs Docker, on configure généralement :
+
+- la commande à exécuter au démarrage (_start command_), par exemple : `sh -c "/bin/bash -i"` ou tout simplement `/bin/bash"`
+- le nombre d'interface réseau (_adapters_), 1 par défaut
+- le type de console (`telnet`, `vnc` ou `http`)
+- les variables d'environnement, par exemple : `PROMPT_COMMAND=history -a` (pour conserver l'historique des commandes saisies)
+
+image:node-properties-server-apache-1.png[]
+
+Dans l'onglet `Advanced` :
+
+- ajouter des noms d'hôte dans le fichier `/etc/hosts`
+- ajouter des répertoires persistants au conteneur Docker, par exemple :
+
+image:node-properties-server-apache-2.png[]
+
+==== Type de console
+
+On utilise habituellement une console de type `telnet` pour opérer avec un noeud. Si le noeud fournit une GUI, il faudra utiliser `vncviewer` pour s'y connecter à partir d'une console :
+
+----
+$ wget https://www.realvnc.com/download/file/viewer.files/VNC-Viewer-6.21.1109-Linux-x64.deb
+$ sudo dpkg -i VNC-Viewer-6.21.1109-Linux-x64.deb
+----
+
+Certains conteneurs utilise `http` :
+
+image:gns3-console-http.png[]
+
+=== Topologie d'une maquette
+
+Créer un nouveau projet ou télécharger et importer dans GNS3 une maquette fournie pour un TP :
+
+image:gns3-import-project-1.png[]
+
+Exemple de maquette basique :
+
+image:gns3-maquette-interface.png[]
+
+Il faut démarrer les machines de la maquette (toutes avec la flèche verte de la barre d'outils ou individuellement avec le menu contextuel clic droit d'une machine):
+
+image:gns3-start-machine.png[]
+
+L'ensemble des noeuds :
+
+image:gns3-maquette-running.png[]
+
+=== Capture de trames
+
+Il est possible de démarrer une (ou plusieurs) capture **Wireshark** sur un lien de la maquette :
+
+image:gns3-start-capture.png[]
+
+ou :
+
+image:gns3-start-capture-wireshark.png[]
+
+Puis :
+
+image:gns3-packet-capture.png[]
+
+=== Divers
+
+Au démarrage d'une machine, il est possible que les liens symboliques (déterminant les noms par défaut de certaines commandes par exemple) soient manquants. Une méthode simple pour corriger les alternatives cassées est d'utiliser :
+
+----
+# yes '0' | update-alternatives --force --all
+----
+
+== Web-Ui
 
 L'accès à GNS3 peut aussi se faire par une interface Web : `http://<adresse-ip>/`
 
@@ -196,6 +368,31 @@ image:gns3-new-docker-container-5.png[]
 
 Finaliser en cliquant sur `Add template`.
 
+== Liste des TPs
+
+Les TPs sont disponibles depuis https://classroom.github.com/[Github Classroom] :
+
+- https://github.com/btssn-lasalle84/tp-reseau-interface
+
+- https://github.com/btssn-lasalle84/tp-reseau-routage-statique
+
+- https://github.com/btssn-lasalle84/tp-reseau-ipv4
+
+- https://github.com/btssn-lasalle84/tp-reseau-services
+
+- https://github.com/btssn-lasalle84/tp-reseau-parefeu
+
+- https://github.com/btssn-lasalle84/tp-reseau-vlan
+
+- https://github.com/btssn-lasalle84/tp-reseau-routage-dynamique
+
+- https://github.com/btssn-lasalle84/tp-reseau-tcp-udp
+
+- https://github.com/btssn-lasalle84/tp-reseau-ipv6
+
+- https://github.com/btssn-lasalle84/tp-reseau-windows
+
+- https://github.com/btssn-lasalle84/tp-admin-http
 
 ***
 
