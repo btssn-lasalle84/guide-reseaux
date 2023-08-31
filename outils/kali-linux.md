@@ -10,7 +10,7 @@ Lien : https://www.kali.org/get-kali/
 
 Il est conseillé d'utiliser une machine virtuelle : https://www.kali.org/get-kali/#kali-virtual-machines
 
-> Avec [Vagrant](vagrant.md) !
+> Avec ou [quickemu](quickemu.md) ou [Vagrant](vagrant.md) !
 
 ## Liste des outils
 
